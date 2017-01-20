@@ -133,7 +133,8 @@ var SFTPServer = (function(superClass) {
     }
     SFTPServer.options = options;
     this.server = new ssh2.Server({
-      privateKey: fs.readFileSync(options.privateKeyFile)
+      privateKey: fs.readFileSync(options.privateKeyFile),
+      hostKeys: [this.privateKey]
     }, (function(_this) {
       return function(client, info) {
         client.on('authentication', function(ctx) {
