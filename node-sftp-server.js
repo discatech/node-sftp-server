@@ -103,8 +103,8 @@ var ContextWrapper = (function() {
     this.password = this.ctx.password;
   }
 
-  ContextWrapper.prototype.reject = function() {
-    return this.ctx.reject();
+  ContextWrapper.prototype.reject = function(methodsLeft, isPartial) {
+    return this.ctx.reject(methodsLeft, isPartial);
   };
 
   ContextWrapper.prototype.accept = function(callback) {
