@@ -3,7 +3,11 @@
 "use strict";
 
 var extend  = function (child, parent) {
-		for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; }
+		for (var key in parent) {
+			if (hasProp.call(parent, key)) {
+				child[key] = parent[key];
+			}
+		}
 		function ctor() { this.constructor = child; }
 
 		ctor.prototype = parent.prototype;
@@ -33,7 +37,7 @@ var moment = require('moment');
 var constants = require('constants');
 
 var getLongname = function (name, attrs, owner = '', group = '') {
-	var longname = '';
+	let longname = '';
 
 	if (attrs.type === fs.constants.S_IFREG) {
 		longname += '-'
@@ -43,24 +47,23 @@ var getLongname = function (name, attrs, owner = '', group = '') {
 	}
 
 	let permissions = attrs.permissions.toString().split('');
-	permissions.forEach((el) = > {
+	permissions.forEach((el) => {
 		el == 1 ? longname += '--x' : null;
-	el == 2 ? longname += '-w-' : null;
-	el == 3 ? longname += '-wx' : null;
-	el == 4 ? longname += 'r--' : null;
-	el == 5 ? longname += 'r-x' : null;
-	el == 6 ? longname += 'rw-' : null;
-	el == 7 ? longname += 'rwx' : null;
-})
-	;
+		el == 2 ? longname += '-w-' : null;
+		el == 3 ? longname += '-wx' : null;
+		el == 4 ? longname += 'r--' : null;
+		el == 5 ? longname += 'r-x' : null;
+		el == 6 ? longname += 'rw-' : null;
+		el == 7 ? longname += 'rwx' : null;
+	});
 
 	longname += ' ' + owner + ' ' + group + ' ';
 	longname += name + ' ';
 	longname += attrs.size ? attrs.size : ' ';
-	longname += ' ' + moment(attrs.mtime).format('MMM DD YYYY HH:mm:ss')
+	longname += ' ' + moment.unix(attrs.mtime).format('MMM DD YYYY HH:mm:ss');
 
 	return longname;
-}
+};
 
 var Responder = (function (superClass) {
 	extend(Responder, superClass);
@@ -122,7 +125,6 @@ var DirectoryEmitter = (function (superClass) {
 		if (typeof attrs === 'undefined') {
 			attrs = {};
 		}
-		console.log(getLongname(name.toString(), attrs));
 		this.stopped = this.sftpStream.name(this.req, {
 			filename: name.toString(),
 			longname: getLongname(name.toString(), attrs),
@@ -169,8 +171,12 @@ var SFTPServer = (function (superClass) {
 
 	function SFTPServer(options) {
 		// Expose options for the other classes to read.
-		if (!options) options = {privateKeyFile: 'ssh_host_rsa_key'};
-		if (typeof options === 'string') options = {privateKeyFile: options}; // Original constructor had just a privateKey string, so this preserves backwards compatibility.
+		if (!options) {
+			options = {privateKeyFile: 'ssh_host_rsa_key'};
+		}
+		if (typeof options === 'string') {
+			options = {privateKeyFile: options};
+		} // Original constructor had just a privateKey string, so this preserves backwards compatibility.
 		if (options.debug) {
 			debug = function (msg) { console.log(msg); };
 		}
@@ -393,9 +399,13 @@ var SFTPSession = (function (superClass) {
 			case "r":
 				// Create a temporary file to hold stream contents.
 				var options = {};
-				if (SFTPServer.options.temporaryFileDirectory) options.dir = SFTPServer.options.temporaryFileDirectory;
+				if (SFTPServer.options.temporaryFileDirectory) {
+					options.dir = SFTPServer.options.temporaryFileDirectory;
+				}
 				return tmp.file(options, function (err, tmpPath, fd) {
-					if (err) throw err;
+					if (err) {
+						throw err;
+					}
 					handle = this.fetchhandle();
 					this.handles[handle] = {
 						mode: "READ",
@@ -442,7 +452,9 @@ var SFTPSession = (function (superClass) {
 		// buffer, and we know we can check against it for EOF state.
 		if (localHandle.finished) {
 			return fs.stat(localHandle.tmpPath, function (err, stats) {
-				if (err) throw err;
+				if (err) {
+					throw err;
+				}
 
 				if (offset >= stats.size) {
 					return this.sftpStream.status(reqid, ssh2.SFTP_STATUS_CODE.EOF);
