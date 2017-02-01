@@ -395,54 +395,56 @@ var SFTPSession = (function (superClass) {
 	SFTPSession.prototype.OPEN = function (reqid, pathname, flags, attrs) {
 		var handle, rs, started, stringflags, ts;
 		stringflags = SFTP.flagsToString(flags);
-		switch (stringflags) {
-			case "r":
-				// Create a temporary file to hold stream contents.
-				var options = {};
-				if (SFTPServer.options.temporaryFileDirectory) {
-					options.dir = SFTPServer.options.temporaryFileDirectory;
+
+		if (stringflags === 'r') {
+			// Create a temporary file to hold stream contents.
+			var options = {};
+			if (SFTPServer.options.temporaryFileDirectory) {
+				options.dir = SFTPServer.options.temporaryFileDirectory;
+			}
+			return tmp.file(options, function (err, tmpPath, fd) {
+				if (err) {
+					throw err;
 				}
-				return tmp.file(options, function (err, tmpPath, fd) {
-					if (err) {
-						throw err;
-					}
-					handle = this.fetchhandle();
-					this.handles[handle] = {
-						mode: "READ",
-						path: pathname,
-						finished: false,
-						tmpPath: tmpPath,
-						tmpFile: fd
-					};
-					var writestream = fs.createWriteStream(tmpPath);
-					writestream.on("finish", function () {
-						this.handles[handle].finished = true;
-					}.bind(this));
-					this.emit("readfile", pathname, writestream);
-					return this.sftpStream.handle(reqid, handle);
+				handle = this.fetchhandle();
+				this.handles[handle] = {
+					mode: "READ",
+					path: pathname,
+					finished: false,
+					tmpPath: tmpPath,
+					tmpFile: fd
+				};
+				var writestream = fs.createWriteStream(tmpPath);
+				writestream.on("finish", function () {
+					this.handles[handle].finished = true;
 				}.bind(this));
-			case "w":
-				rs = new Readable();
-				started = false;
-				rs._read = (function (_this) {
-					return function (bytes) {
-						if (started) {
-							return;
-						}
-						handle = _this.fetchhandle();
-						_this.handles[handle] = {
-							mode: "WRITE",
-							path: pathname,
-							stream: rs
-						};
-						_this.sftpStream.handle(reqid, handle);
-						return started = true;
-					};
-				})(this);
-				return this.emit("writefile", pathname, rs);
-			default:
-				return this.emit("error", new Error("Unknown open flags: " + stringflags));
+				this.emit("readfile", pathname, writestream);
+				return this.sftpStream.handle(reqid, handle);
+			}.bind(this));
 		}
+		if (stringflags === 'w' || stringflags === 'wx') {
+			rs = new Readable();
+			started = false;
+			rs._read = (function (_this) {
+				return function (bytes) {
+					if (started) {
+						return;
+					}
+					handle = _this.fetchhandle();
+					_this.handles[handle] = {
+						mode: "WRITE",
+						path: pathname,
+						stream: rs
+					};
+					_this.sftpStream.handle(reqid, handle);
+					return started = true;
+				};
+			})(this);
+			return this.emit("writefile", pathname, rs);
+		}
+
+		return this.emit("error", new Error("Unknown open flags: " + stringflags));
+
 	};
 
 	SFTPSession.prototype.READ = function (reqid, handle, offset, length) {
