@@ -36,7 +36,7 @@ var moment = require('moment');
 
 var constants = require('constants');
 
-var getLongname = function (name, attrs, owner = '', group = '') {
+var getLongname = function (name, attrs, owner = 'user', group = 'user') {
 	let longname = '';
 
 	if (attrs.type === fs.constants.S_IFREG) {
