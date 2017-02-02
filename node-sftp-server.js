@@ -60,7 +60,7 @@ var getLongname = function (name, attrs, owner = 'user', group = 'user') {
 	longname += ' 0';
 	longname += ' ' + owner + ' ' + group + ' ';
 	longname += attrs.size ? attrs.size : '0';
-	longname += ' ' + moment.unix(attrs.mtime).format('MMM DD HH:mm:ss');
+	longname += ' ' + moment.unix(attrs.mtime).format('MMM DD HH:mm');
 	longname += ' ' + name;
 
 	return longname;
