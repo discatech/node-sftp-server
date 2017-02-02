@@ -57,10 +57,11 @@ var getLongname = function (name, attrs, owner = 'user', group = 'user') {
 		el == 7 ? longname += 'rwx' : null;
 	});
 
+	longname += ' 0';
 	longname += ' ' + owner + ' ' + group + ' ';
-	longname += name + ' ';
-	longname += attrs.size ? attrs.size : ' ';
-	longname += ' ' + moment.unix(attrs.mtime).format('MMM DD YYYY HH:mm:ss');
+	longname += attrs.size ? attrs.size : '0';
+	longname += ' ' + moment.unix(attrs.mtime).format('MMM DD HH:mm:ss');
+	longname += ' ' + name;
 
 	return longname;
 };
