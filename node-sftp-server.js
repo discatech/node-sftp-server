@@ -2,21 +2,21 @@
 
 "use strict";
 
-var extend  = function(child, parent) {
-			for (var key in parent) {
-				if (hasProp.call(parent, key)) {
-					child[key] = parent[key];
-				}
+var extend = function(child, parent) {
+		for (var key in parent) {
+			if (hasProp.call(parent, key)) {
+				child[key] = parent[key];
 			}
-			function ctor() { this.constructor = child; }
+		}
+		function ctor() { this.constructor = child; }
 
-			ctor.prototype = parent.prototype;
-			child.prototype = new ctor();
-			child.__super__ = parent.prototype;
-			return child;
-		},
-		hasProp = {}.hasOwnProperty,
-		slice   = [].slice;
+		ctor.prototype = parent.prototype;
+		child.prototype = new ctor();
+		child.__super__ = parent.prototype;
+		return child;
+	},
+	hasProp = {}.hasOwnProperty,
+	slice = [].slice;
 
 var ssh2 = require('ssh2');
 var ssh2_stream = require('ssh2-streams');
@@ -180,6 +180,7 @@ var SFTPServer = (function(superClass) {
 			return function(client, info) {
 				client.on('authentication', function(ctx) {
 					debug("SFTP Server: on('authentication')");
+					_this.clientInfo = info;
 					_this.auth_wrapper = new ContextWrapper(ctx, _this);
 					return _this.emit("connect", _this.auth_wrapper);
 				});
