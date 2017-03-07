@@ -66,6 +66,14 @@ var getLongname = function(name, attrs, owner = 'nobody', group = 'nogroup') {
 	return longname;
 };
 
+var parseClientInfo = function(info) {
+	if (info.ip) {
+		info.ipv4 = info.ip.match(/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/);
+	}
+	console.log(info);
+	return info;
+};
+
 var Responder = (function(superClass) {
 	extend(Responder, superClass);
 
@@ -180,7 +188,7 @@ var SFTPServer = (function(superClass) {
 			return function(client, info) {
 				client.on('authentication', function(ctx) {
 					debug("SFTP Server: on('authentication')");
-					_this.clientInfo = info;
+					_this.clientInfo = parseClientInfo(info);
 					_this.auth_wrapper = new ContextWrapper(ctx, _this);
 					return _this.emit("connect", _this.auth_wrapper);
 				});
