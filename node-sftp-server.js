@@ -70,7 +70,6 @@ var parseClientInfo = function(info) {
 	if (info.ip) {
 		info.ipv4 = info.ip.match(/\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/);
 	}
-	console.log(info);
 	return info;
 };
 
