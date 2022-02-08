@@ -507,7 +507,7 @@ var SFTPSession = (function(superClass) {
         if (this.handles[handle]) {
             switch (this.handles[handle].mode) {
                 case "OPENDIR":
-                    this.handles[handle].f.emit("end");
+                    this.handles[handle].responder.emit("end");
                     delete this.handles[handle];
                     return this.sftpStream.status(reqid, ssh2.SFTP_STATUS_CODE.OK);
                 case "READ":
