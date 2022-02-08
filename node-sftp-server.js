@@ -405,7 +405,11 @@ var SFTPSession = (function(superClass) {
 
     SFTPSession.prototype.OPEN = function(reqid, pathname, flags, attrs) {
         var handle, rs, started, stringflags, ts;
-        stringflags = SFTP.flagsToString(flags);
+        if (flags === 18 || flags === 42) {
+            stringflags = 'w' // Fix for cyberduck overwrite file
+        } else {
+            stringflags = SFTP.flagsToString(flags);
+        }
 
         if (stringflags === 'r') {
             // Create a temporary file to hold stream contents.
