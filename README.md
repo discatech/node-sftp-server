@@ -201,3 +201,12 @@ several error conditions that you can use to refuse the request -
 -   `responder.bad_message()` - protocol error; bad message (unusual)
 -   `responder.unsupported()` - operation not supported
 -   `responder.ok()` - success
+
+## Tests
+
+To run the tests, you will need to generate an rsa key within the root folder.
+
+```shell
+ssh-keygen -t rsa -m PEM -C services@disca.tech -f ./id_rsa
+yarn test
+```
