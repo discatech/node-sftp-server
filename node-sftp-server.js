@@ -227,6 +227,10 @@ var SFTPServer = (function(superClass) {
         return this.server.listen(port);
     };
 
+    SFTPServer.prototype.close = function() {
+        return this.server.close();
+    };
+
     return SFTPServer;
 
 })(EventEmitter);
